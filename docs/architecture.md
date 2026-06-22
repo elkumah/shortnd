@@ -86,6 +86,8 @@ The URL Redirect Service Flow describes how requests to shortened URLs are proce
 
 # Database Design
 
+![URL Table](images/URLTable.png)
+
 # Infrastructure Architecture
 
 # Security Architecture
