@@ -27,7 +27,7 @@ This section describes the journey from the perspective of the user without focu
 
 ### Flow Description
 
-- User clicsk on shortened url. Example: `https://short.ly/abc123`
+- User clicks on shortened url. Example: `https://short.ly/abc123`
 - The platform identifies the original URL associated with the shortened link.
 - The user is automatically redirected to the destination URL.
 - The original website loads in the user's browser.
@@ -62,6 +62,12 @@ The user flow is considered successful when:
 - Visiting the shortened URL redirects the user to the correct destination.
 
 # Service Flow
+
+The URL Creation Service Flow describes how the frontend, API service, and database interact when creating a shortened URL.
+
+## URL Creation Service Flow
+
+![URL Creation Service Flow flow](images/ServiceFlow.png)
 
 # Database Design
 
