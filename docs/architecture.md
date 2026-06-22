@@ -61,13 +61,28 @@ The user flow is considered successful when:
 - The shortened URL is displayed correctly.
 - Visiting the shortened URL redirects the user to the correct destination.
 
-# Service Flow
+## URL Creation Service Flow
 
 The URL Creation Service Flow describes how the frontend, API service, and database interact when creating a shortened URL.
 
-## URL Creation Service Flow
+![URL Creation Service flow](images/ServiceFlow.png)
 
-![URL Creation Service Flow flow](images/ServiceFlow.png)
+### Participants
+
+- Frontend service
+- API service
+- PostgreSQL Database
+
+## URL Redirect Service Flow
+
+The URL Redirect Service Flow describes how requests to shortened URLs are processed and redirected to the original destination.
+![URL Redirect Service Flow](images/RedirectServiceFlow.png)
+
+### Participants
+
+- Browser
+- Redirect Service
+- PostgreSQL Database
 
 # Database Design
 
