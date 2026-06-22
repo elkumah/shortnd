@@ -88,6 +88,33 @@ The URL Redirect Service Flow describes how requests to shortened URLs are proce
 
 ![URL Table](images/URLTable.png)
 
+# High Level Architecture
+
+## Components
+
+- Frontend Service
+- API Service
+- Redirect Service
+- PostgreSQL Service
+
+## Responsibility
+
+### Frontend service
+
+Provides the user interface for creating shortened URLs.
+
+### API Service
+
+Validates URLs, generate the short code,and stores URL mappings.
+
+### Redirect Service
+
+Processes shortened URLs and redirects users to the original destination
+
+### PostgreSQL Service
+
+Stores URL mappings and metadata
+
 # Infrastructure Architecture
 
 # Security Architecture
