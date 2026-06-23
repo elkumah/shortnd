@@ -1,0 +1,69 @@
+
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+
+.venv/
+venv/
+env/
+
+# Environment Variables
+
+.env
+.env.*
+!.env.example
+
+# IDE
+
+.vscode/
+.idea/
+
+# OS Files
+
+.DS_Store
+Thumbs.db
+
+# Python Packaging
+
+build/
+dist/
+*.egg-info/
+
+# Logs
+
+*.log
+
+# Testing
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Database Files
+
+*.db
+*.sqlite3
+
+# Terraform 
+
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform.tfvars
+
+# Kubernetes Secrets 
+
+secrets.yaml
+
+# Docker
+
+docker-compose.override.yml
+
+# Misc
+
+*.swp
+*.swo
