@@ -84,6 +84,20 @@ The URL Redirect Service Flow describes how requests to shortened URLs are proce
 - Redirect Service
 - PostgreSQL Database
 
+# API Contract
+
+## POST /shorten
+
+Request:
+{
+"url": "http://google.com"
+}
+Response
+{
+"short_code": "abc123"
+"short_url": "http://locahost:8000/abc123"
+}
+
 # Database Design
 
 ![URL Table](images/URLTable.png)
