@@ -84,6 +84,9 @@ The URL Redirect Service Flow describes how requests to shortened URLs are proce
 - Redirect Service
 - PostgreSQL Database
 
+#Service Flow
+Frontend->API-> Redis Queue -> Worker Service -> PostgreSQL -> OpenTelemetry -> Prometheus -> Grafana
+
 # API Contract
 
 ## POST /shorten
