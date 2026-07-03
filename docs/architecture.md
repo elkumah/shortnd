@@ -105,6 +105,18 @@ Response
 
 ![URL Table](images/URLTable.png)
 
+### Database Layer
+
+**Responsibilities**
+
+- Manage database connectivity
+- Create SQLAlchemy engine
+- Provide database sessions
+- Define the base class for ORM models
+
+**Design Decision**
+The database layer is isolated from the service and repository layers.This allows business logic to remain independent of database connection management and makes the application easier to test and maintain.
+
 # High Level Architecture
 
 ## Components
