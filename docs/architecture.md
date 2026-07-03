@@ -146,6 +146,26 @@ Stores URL mappings and metadata
 
 # Infrastructure Architecture
 
+## Local Development Infrastructure
+
+Services:
+
+- FastAPI
+- PostgreSQL
+
+Networking:
+
+- Shared Docker network
+- API connects to the PostgreSQL using the service name
+
+Storage:
+
+- PostgreSQL stored in a named Docker volume
+
+Configuration:
+
+- Environment variables loaded from a root `.env` file
+
 # Security Architecture
 
 # Observability Architecture
