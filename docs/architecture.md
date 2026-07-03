@@ -166,6 +166,44 @@ Configuration:
 
 - Environment variables loaded from a root `.env` file
 
+### PostgreSQL Service Design
+
+Image
+
+- Official PostgreSQL image (version pinned)
+
+Container
+
+- shortnd-postgres
+
+Database
+
+- shortnd
+
+User
+
+- shortnd_user
+
+Configuration
+
+- Environment variables (.env)
+
+Port
+
+- 5432
+
+Storage
+
+- Named Docker volume (persistent)
+
+Network
+
+- Shared Docker network with API
+
+Health Check
+
+- PostgreSQL readiness probe
+
 # Security Architecture
 
 # Observability Architecture
