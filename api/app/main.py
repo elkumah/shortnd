@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from sqlalchemy.orm import Session
 from .schemas import URLRequest, URLResponse
 from .services.url_service import URLService
@@ -16,6 +16,9 @@ def root():
 }
 
 def get_url_service(db: Session = Depends(get_db)) -> URLService:
+    """
+    Create and return a URLService instance for each request.
+    """
     url_repository = URLRepository(db)
     # Create and return a URLService instance using the URLRepository
     return URLService(url_repository)
