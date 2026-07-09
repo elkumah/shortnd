@@ -19,4 +19,4 @@ class URLService:
         short_code = self.generate_short_code()
         url= URL(original_url=original_url, short_code=short_code)
         return self.repository.create(url)
-      
+        
