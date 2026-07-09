@@ -1,16 +1,31 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
 from .schemas import URLRequest, URLResponse
 from .services.url_service import URLService
+from .database import get_db
+from .repositories.url_repository import URLRepository
+from .config import settings
+
 app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"message": "Hello World. Testing Fast API endpoint."}
+    return {
+    "message": "Secure URL Shortener API",
+    "version": "1.0.0"
+}
 
+def get_url_service(db: Session = Depends(get_db)) -> URLService:
+    url_repository = URLRepository(db)
+    # Create and return a URLService instance using the URLRepository
+    return URLService(url_repository)
 
-@app.post("/shorten/", response_model=URLResponse)
-async def shorten_url(url_request: URLRequest):
-    url = url_request.url
-    url_service = URLService()
-    short_code = url_service.generate_short_code(url)
-    return URLResponse(short_code=short_code, shortened_url=f"http://localhost:8000/{short_code}")
+@app.post("/shorten/", response_model=URLResponse, status_code=HTTP_201_CREATED)
+async def shorten_url( url_request: URLRequest,url_service: URLService = Depends(get_url_service)):
+    url_record = url_service.create_short_url(url_request.url)
+
+    return URLResponse(
+        short_code=url_record.short_code,
+        shortened_url=f"{settings.BASE_URL}/{url_record.short_code}"
+    )
+    
