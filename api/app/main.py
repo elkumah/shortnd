@@ -2,11 +2,14 @@ from fastapi import FastAPI, Depends, status
 from sqlalchemy.orm import Session
 from .schemas import URLRequest, URLResponse
 from .services.url_service import URLService
-from .database import get_db
+from .database import get_db, Base, engine
 from .repositories.url_repository import URLRepository
 from .config import settings
+from .models import URL
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)  # Create database tables based on models
 
 @app.get("/")
 def root():
@@ -23,7 +26,7 @@ def get_url_service(db: Session = Depends(get_db)) -> URLService:
     # Create and return a URLService instance using the URLRepository
     return URLService(url_repository)
 
-@app.post("/shorten/", response_model=URLResponse, status_code=HTTP_201_CREATED)
+@app.post("/shorten/", response_model=URLResponse, status_code=status.HTTP_201_CREATED)
 async def shorten_url( url_request: URLRequest,url_service: URLService = Depends(get_url_service)):
     url_record = url_service.create_short_url(url_request.url)
 
