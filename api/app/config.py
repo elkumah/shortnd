@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+    BASE_URL: str  # Base URL for the application, e.g., http://localhost:8000
 
     @computed_field
     @property
