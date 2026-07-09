@@ -1,6 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import computed_field
 class Settings(BaseSettings):
+    """
+    Application configuration loaded from environment variables.
+    """
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     # Application settings loaded from environment variables
