@@ -8,10 +8,9 @@ engine = create_engine(settings.DATABASE_URL)
 # Create session factory for database interactions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Define the base class for future database models to inherit from
-class Base(declarative_base()):
-    pass
+Base = declarative_base()
 
-# Create a function to get a database session
+# Dependency function to provide a database session for each request
 def get_db():
     db = SessionLocal()
     try:
