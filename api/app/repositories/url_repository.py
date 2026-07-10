@@ -1,7 +1,6 @@
 from typing import Optional
-
 from sqlalchemy.orm import Session
-from sqlachemy import select
+from sqlalchemy import select
 from ..models import URL
 
 class URLRepository:
@@ -11,7 +10,7 @@ class URLRepository:
         self.db.add(url)
         self.db.commit()
         self.db.refresh(url)
-        return new_url
+        return url
 
     def get_by_short_code(self, short_code: str) -> Optional[URL]:
         # Retrieve a URL mapping from the database based on the provided short code.
