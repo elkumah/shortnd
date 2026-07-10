@@ -1,6 +1,6 @@
 import secrets
-from app.models import URL
-from app.repositories.url_repository import URLRepository
+from ..models import URL
+from api.app.repositories.url_repository import URLRepository
 
 SHORT_CODE_BYTES = 6  # Length of the short code
 
