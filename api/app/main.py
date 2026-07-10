@@ -28,7 +28,7 @@ def get_url_service(db: Session = Depends(get_db)) -> URLService:
 
 @app.post("/shorten/", response_model=URLResponse, status_code=status.HTTP_201_CREATED)
 async def shorten_url( url_request: URLRequest,url_service: URLService = Depends(get_url_service)):
-    url_record = url_service.create_short_url(url_request.url)
+    url_record = url_service.create_short_url(str(url_request.url))
 
     return URLResponse(
         short_code=url_record.short_code,
