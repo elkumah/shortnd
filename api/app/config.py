@@ -19,5 +19,11 @@ class Settings(BaseSettings):
     def DATABASE_URL(self) -> str:
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
+model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+)
+
 #Instantiate configuration
 settings = Settings()
+print(settings)
