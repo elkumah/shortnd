@@ -52,3 +52,10 @@ class URLService:
         )
 
         return self.repository.create(url)
+
+    # Retrieve the original URL based on the provided short code.
+    def get_url_by_short_code(self, short_code: str) -> URL:
+        url = self.repository.get_by_short_code(short_code)
+        if url is None:
+            raise ValueError(f"No URL found for short code: {short_code}")
+        return url
