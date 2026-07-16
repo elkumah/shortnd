@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from .schemas import URLRequest, URLResponse
 from .services.url_service import URLService
 from .database import get_db, Base, engine
 from .repositories.url_repository import URLRepository
 from .config import settings
-from .models import URL
 
 app = FastAPI()
 
@@ -35,3 +35,18 @@ async def shorten_url( url_request: URLRequest,url_service: URLService = Depends
         shortened_url=f"{settings.BASE_URL}/{url_record.short_code}"
     )
     
+# Return redirect response to the original URL based on the provided short code.
+
+@app.get("/{short_code}")
+async def redirect_to_original_url(short_code: str, url_service: URLService = Depends(get_url_service)):
+    try:
+        url_record = url_service.get_url_by_short_code(short_code)
+        return RedirectResponse(
+            url=url_record.original_url,
+            status_code=status.HTTP_302_FOUND
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No URL found for short code: {short_code}"
+        )
