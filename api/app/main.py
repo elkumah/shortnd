@@ -3,13 +3,12 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from .schemas import URLRequest, URLResponse
 from .services.url_service import URLService
-from .database import get_db, Base, engine
+from .database import get_db
 from .repositories.url_repository import URLRepository
 from .config import settings
 
 app = FastAPI()
 
-Base.metadata.create_all(bind=engine)  # Create database tables based on models
 
 @app.get("/")
 def root():
