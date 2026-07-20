@@ -6,8 +6,10 @@ from .services.url_service import URLService
 from .database import get_db
 from .repositories.url_repository import URLRepository
 from .config import settings
+fropm .exceptions import URLNotFoundException, url_not_found_exception_handler
 
 app = FastAPI()
+app.add_exception_handler(URLNotFoundException, url_not_found_exception_handler)
 
 
 @app.get("/")
@@ -38,14 +40,10 @@ async def shorten_url( url_request: URLRequest,url_service: URLService = Depends
 
 @app.get("/{short_code}")
 async def redirect_to_original_url(short_code: str, url_service: URLService = Depends(get_url_service)):
-    try:
+    
         url_record = url_service.get_url_by_short_code(short_code)
         return RedirectResponse(
             url=url_record.original_url,
             status_code=status.HTTP_302_FOUND
         )
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No URL found for short code: {short_code}"
-        )
+    
