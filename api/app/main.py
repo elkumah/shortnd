@@ -7,13 +7,25 @@ from .database import get_db
 from .repositories.url_repository import URLRepository
 from .config import settings
 from .exceptions import URLNotFoundException, url_not_found_exception_handler
+import logging
+from .logging import get_logger
 
+logger = get_logger(__name__)
 app = FastAPI()
 app.add_exception_handler(URLNotFoundException, url_not_found_exception_handler)
 
 
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Starting up the application...")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Shutting down the application...")
+
 @app.get("/")
 def root():
+    logger.info("Root endpoint accessed")
     return {
     "message": "Secure URL Shortener API",
     "version": "1.0.0"
