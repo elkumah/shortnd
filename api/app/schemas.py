@@ -1,15 +1,22 @@
 from pydantic import BaseModel
 from pydantic import HttpUrl
+from pydantic import Field
 
 # Define a Pydantic model for the request body
 class URLRequest(BaseModel):
     url: HttpUrl
 
 class URLResponse(BaseModel):
-    short_code: str
+    short_code: str = Field(
+        min_length=6,
+        max_length=20,
+    )
     shortened_url: str
 
 # Define a Pydantic model for the request response when retrieving the original URL
 class OriginalURLResponse(BaseModel):
-    short_code: str
+    short_code: str = Field(
+        min_length=6,
+        max_length=20,
+    )
     original_url: HttpUrl
