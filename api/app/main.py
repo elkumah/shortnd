@@ -6,7 +6,7 @@ from .services.url_service import URLService
 from .database import get_db
 from .repositories.url_repository import URLRepository
 from .config import settings
-fropm .exceptions import URLNotFoundException, url_not_found_exception_handler
+from .exceptions import URLNotFoundException, url_not_found_exception_handler
 
 app = FastAPI()
 app.add_exception_handler(URLNotFoundException, url_not_found_exception_handler)
