@@ -9,6 +9,7 @@ from .config import settings
 from .exceptions import URLNotFoundException, url_not_found_exception_handler
 import logging
 from .logging import get_logger
+from sqlalchemy import text
 
 logger = get_logger(__name__)
 app = FastAPI()
@@ -22,6 +23,26 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("Shutting down the application...")
+
+# Add health check endpoint
+@app.get("/health")
+
+def health_check(db: Session = Depends(get_db)):
+    """
+    Verifies application health and PostgreSQL connectivity.
+    Returns HTTP 503 if the database is unreachable.
+    """
+    try:
+        # Attempt to execute a simple query to check database connectivity
+        db.execute(text("SELECT 1"))
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection failed"
+        )
+   
 
 @app.get("/")
 def root():
