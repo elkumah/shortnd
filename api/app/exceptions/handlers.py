@@ -2,7 +2,7 @@ from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from .custom_exceptions import URLNotFoundException
 from ..logging.logger import get_logger
-
+import logging
 
 
 logger = get_logger(__name__)
