@@ -1,11 +1,17 @@
 import secrets
+import logging
+
 
 from ..models import URL
 from ..repositories.url_repository import URLRepository
 from ..exceptions import URLNotFoundException
+from ..logging.logger import get_logger
+
 
 SHORT_CODE_BYTES = 6
 MAX_RETRY_ATTEMPTS = 5
+
+logger = get_logger(__name__)
 
 
 class URLService:
@@ -45,7 +51,13 @@ class URLService:
         """
         Create and persist a new shortened URL.
         """
-        short_code = self.generate_unique_short_code()
+        logger.info(f"Creating a short URL for: {original_url}")
+
+        try:
+            short_code = self.generate_unique_short_code()
+        except RuntimeError as e:
+            logger.error(f"Error generating unique short code: {e}")
+            raise
 
         url = URL(
             original_url=original_url,
@@ -56,7 +68,9 @@ class URLService:
 
     # Retrieve the original URL based on the provided short code.
     def get_url_by_short_code(self, short_code: str) -> URL:
+        logger.info(f"Retrieving original URL for short code: {short_code}")
         url = self.repository.get_by_short_code(short_code)
         if not url:
+            logger.warning(f"URL not found for short code: {short_code}")
             raise URLNotFoundException(short_code)
         return url
