@@ -20,3 +20,8 @@ class OriginalURLResponse(BaseModel):
         max_length=20,
     )
     original_url: HttpUrl
+
+# Define health check response model
+class HealthCheckResponse(BaseModel):
+    status: str
+    database: str 
