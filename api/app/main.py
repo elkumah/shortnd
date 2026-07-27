@@ -25,7 +25,7 @@ async def shutdown_event():
     logger.info("Shutting down the application...")
 
 # Add health check endpoint
-@app.get("/health")
+@app.get("/health", response_model=HealthCheckResponse)
 
 def health_check(db: Session = Depends(get_db)):
     """
@@ -35,7 +35,7 @@ def health_check(db: Session = Depends(get_db)):
     try:
         # Attempt to execute a simple query to check database connectivity
         db.execute(text("SELECT 1"))
-        return {"status": "healthy", "database": "connected"}
+        return HealthCheckResponse(status="healthy", database="connected")
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
         raise HTTPException(
