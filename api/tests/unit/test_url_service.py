@@ -99,3 +99,27 @@ def test_create_short_url_generates_new_code_when_collision_occurs():
     assert result.short_code == "def67890"
 
     assert mock_repository.get_by_short_code.call_count == 2  # Ensure it checked for collisions twice
+
+    # test_create_short_url_propagates_repository_exception()
+    def test_create_short_url_propagates_repository_exception():
+        mock_repository = Mock()
+        service = URLService(repository=mock_repository)
+
+        request = URLRequest(
+            url="https://example.com"
+        )
+
+        # Simulate an exception being raised by the repository's create method
+        mock_repository.create.side_effect = Exception("Database error")
+
+        # Act & Assert
+        with patch.object(
+            URLService,
+            "generate_short_code",
+            return_value="abc12345"
+        ):
+            try:
+                service.create_short_url(request)
+                assert False, "Expected an exception to be raised"
+            except Exception as e:
+                assert str(e) == "Database error"  # Ensure the exception message matches
