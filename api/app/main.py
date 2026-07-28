@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, status, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-from .schemas import URLRequest, URLResponse
+from .schemas import URLRequest, URLResponse, HealthCheckResponse
 from .services.url_service import URLService
 from .database import get_db
 from .repositories.url_repository import URLRepository
