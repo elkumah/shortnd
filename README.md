@@ -426,6 +426,29 @@ The application will eventually be deployed using:
 
 ---
 
+## Engineering Challenges Solved
+
+### Alembic Initial Migration Issue
+
+While setting up database migrations, Alembic generated an empty initial migration (`upgrade()` contained only `pass`), resulting in the migration history being applied without creating the `urls` table.
+
+#### Root Cause
+
+The initial migration was generated before Alembic was correctly configured to discover the SQLAlchemy models via `Base.metadata`.
+
+#### Resolution
+
+- Verified Alembic configuration (`env.py`)
+- Confirmed SQLAlchemy model registration
+- Generated a temporary migration to validate model discovery
+- Removed the invalid migration
+- Regenerated the initial migration
+- Successfully applied the migration to both the development and test databases
+
+#### Outcome
+
+The project now maintains consistent database schemas across development and testing using Alembic migrations.
+
 # 🤝 Setup Instructions
 
 - Clone the repository
