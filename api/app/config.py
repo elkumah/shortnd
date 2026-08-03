@@ -1,10 +1,13 @@
+import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import computed_field
+
+ENV_FILE = os.getenv("ENV_FILE", ".env")
 class Settings(BaseSettings):
     """
     Application configuration loaded from environment variables.
     """
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=ENV_FILE, env_file_encoding="utf-8")
 
     # Application settings loaded from environment variables
     POSTGRES_HOST: str
@@ -20,7 +23,7 @@ class Settings(BaseSettings):
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILE,
         env_file_encoding="utf-8"
 )
 
