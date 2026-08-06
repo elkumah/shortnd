@@ -1,7 +1,8 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-
+from app.repositories.url_repository import URLRepository
+from app.models import URL
 from app.config import settings
 
 # Safety check to prevent running tests against the development database
@@ -21,17 +22,19 @@ TestingSessionLocal = sessionmaker(
 
 
 @pytest.fixture
+
 def db_session() -> Session:
-    """
-    Provide a database session to each test.
-
-    After the test completes, roll back any uncommitted
-    transaction and close the session.
-    """
     session = TestingSessionLocal()
-
+    session.query(URL).delete()  # Clear the URL table before each test
+    session.commit()
     try:
         yield session
     finally:
-        session.rollback()
         session.close()
+
+@pytest.fixture
+def repository(db_session) -> URLRepository:
+    """
+    Create a URLRepository using the test database session.
+    """
+    return URLRepository(db_session)
