@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.repositories.url_repository import URLRepository
 from app.models import URL
 from app.config import settings
+from fastapi.testclient import TestClient
 
 # Safety check to prevent running tests against the development database
 assert "shortnd_test" in settings.DATABASE_URL, (
@@ -38,3 +39,7 @@ def repository(db_session) -> URLRepository:
     Create a URLRepository using the test database session.
     """
     return URLRepository(db_session)
+
+@pytest.fixture
+def client():
+    return TestClient(app)
