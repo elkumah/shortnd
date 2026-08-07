@@ -72,3 +72,18 @@ def test_shorten_url_returns_422_when_url_field_is_missing():
     assert data["detail"][0]["loc"] == ["body", "url"]
 
     assert data["detail"][0]["type"] == "missing"
+
+def test_redirect_returns_original_url():
+    # First, create a short URL
+    payload = {
+        "url": "https://example.com"
+    }
+    create_response = client.post("/shorten/", json=payload)
+    assert create_response.status_code == status.HTTP_201_CREATED
+    short_code = create_response.json()["short_code"]
+
+    redirect_response = client.get(f"/{short_code}", follow_redirects=False)
+
+    assert redirect_response.status_code == status.HTTP_302_FOUND
+
+    assert (redirect_response.headers["location"] == "https://example.com")
