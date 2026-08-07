@@ -87,3 +87,22 @@ def test_redirect_returns_original_url():
     assert redirect_response.status_code == status.HTTP_302_FOUND
 
     assert (redirect_response.headers["location"] == "https://example.com")
+
+def test_redirect_returns_404_for_nonexistent_short_code():
+    response = client.get("/nonexistentcode", follow_redirects=False)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    data = response.json()
+
+    assert data["detail"] == "Short URL not found"
+
+def test_shorten_url_returns_422_when_request_body_is_missing():
+    response = client.post("/shorten/")
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    data = response.json()
+
+    assert "detail" in data
+    assert data["detail"][0]["loc"] == ["body"]
