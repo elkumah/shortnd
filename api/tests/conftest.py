@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.repositories.url_repository import URLRepository
 from app.models import URL
 from app.config import settings
+from app.main import app
 from fastapi.testclient import TestClient
 
 # Safety check to prevent running tests against the development database
@@ -31,6 +32,7 @@ def db_session() -> Session:
     try:
         yield session
     finally:
+        session.rollback()
         session.close()
 
 @pytest.fixture
