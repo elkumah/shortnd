@@ -1,9 +1,5 @@
 from fastapi import status
-from fastapi.testclient import TestClient
-
-from app.main import app
 from app.models import URL
-
 
 
 def test_create_and_redirect_flow_success(db_session, client):
