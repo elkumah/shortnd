@@ -8,6 +8,21 @@ name: Shortnd CI
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: shortnd
+          POSTGRES_PASSWORD: shortnd
+          POSTGRES_DB: shortnd
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U shortnd -d shortnd_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
