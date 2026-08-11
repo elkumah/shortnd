@@ -85,7 +85,7 @@ def test_create_and_redirect_flow_success(db_session, client):
     )
 
 
-    def test_multiple_urls_are_isolated(db_session, client):
+def test_multiple_urls_are_isolated(db_session, client):
        payload1 = {"url": "https://example1.com"}
 
        response1 = client.post("/shorten/", json=payload1)
@@ -132,3 +132,13 @@ def test_create_and_redirect_flow_success(db_session, client):
        redirect_response2 = client.get(f"/{short_code2}", follow_redirects=False)
        assert redirect_response2.status_code == status.HTTP_302_FOUND
        assert redirect_response2.headers["location"] == "https://github.com/"
+
+def test_redirect_nonexistent_short_code(client):
+    short_code = "does-not-exist"
+    response = client.get(f"/{short_code}", follow_redirects=False)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    data = response.json()
+    assert data["success"] is False
+    assert data["error"]["code"] == "URL_NOT_FOUND"
+    assert data["error"]["message"] == f"No URL found for short code: {short_code}"
+    assert data["error"]["short_code"] == short_code
