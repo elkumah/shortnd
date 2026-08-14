@@ -43,9 +43,9 @@ jobs:
         working-directory: api
         env:
           POSTGRES_HOST: localhost,
-          POSTGRES_PORT: 5432,
-          POSTGRES_USER: shortnd,
-          POSTGRES_PASSWORD: shortnd,
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: shortnd
+          POSTGRES_PASSWORD: shortnd
           POSTGRES_DB: shortnd_test
           BASE_URL: http://localhost:8000
         run: |
