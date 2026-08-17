@@ -15,7 +15,7 @@ jobs:
         env:
           POSTGRES_USER: shortnd
           POSTGRES_PASSWORD: shortnd
-          POSTGRES_DB: shortnd
+          POSTGRES_DB: shortnd_test
         ports:
           - 5432:5432
         options: >-
@@ -39,10 +39,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Verify PostgreSQL
+        env:
+          PGPASSWORD: shortnd
+        run: |
+          pg_isready -h localhost -p 5432 -U shortnd
+          psql -h localhost -p 5432 -U shortnd -d postgres -c "\l"
       - name: Run alembic migrations
         working-directory: api
         env:
-          POSTGRES_HOST: localhost,
+          POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
           POSTGRES_USER: shortnd
           POSTGRES_PASSWORD: shortnd
