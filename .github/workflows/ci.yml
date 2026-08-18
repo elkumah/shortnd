@@ -56,3 +56,15 @@ jobs:
           BASE_URL: http://localhost:8000
         run: |
           alembic upgrade head
+
+      - name: Run tests
+        working-directory: api
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: shortnd
+          POSTGRES_PASSWORD: shortnd
+          POSTGRES_DB: shortnd_test
+          BASE_URL: http://localhost:8000
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
