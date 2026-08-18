@@ -1,12 +1,9 @@
 import secrets
-import logging
 
-
-from ..models import URL
-from ..repositories.url_repository import URLRepository
 from ..exceptions import URLNotFoundException
 from ..logging.logger import get_logger
-
+from ..models import URL
+from ..repositories.url_repository import URLRepository
 
 SHORT_CODE_BYTES = 6
 MAX_RETRY_ATTEMPTS = 5

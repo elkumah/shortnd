@@ -1,15 +1,17 @@
-from fastapi import FastAPI, Depends, status, HTTPException
+
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
-from .schemas import URLRequest, URLResponse, HealthCheckResponse
-from .services.url_service import URLService
-from .database import get_db
-from .repositories.url_repository import URLRepository
-from .config import settings
-from .exceptions import URLNotFoundException, url_not_found_exception_handler
-import logging
-from .logging import get_logger
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
+from .config import settings
+from .database import get_db
+from .exceptions import URLNotFoundException, url_not_found_exception_handler
+from .logging import get_logger
+from .repositories.url_repository import URLRepository
+from .schemas import HealthCheckResponse, URLRequest, URLResponse
+from .services.url_service import URLService
 
 logger = get_logger(__name__)
 app = FastAPI()
@@ -36,8 +38,8 @@ def health_check(db: Session = Depends(get_db)):
         # Attempt to execute a simple query to check database connectivity
         db.execute(text("SELECT 1"))
         return HealthCheckResponse(status="healthy", database="connected")
-    except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
+    except SQLAlchemyError as e:
+        logger.error(f"Health check failed: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database connection failed"

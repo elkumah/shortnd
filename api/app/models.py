@@ -1,9 +1,12 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import String, DateTime
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+
+from sqlalchemy import DateTime, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+
 from .database import Base
+
 
 # Define the URLModel class that represents the "urls" table in the database
 class URL(Base):

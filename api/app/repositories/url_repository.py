@@ -1,9 +1,9 @@
-from typing import Optional
-from sqlalchemy.orm import Session
+
 from sqlalchemy import select
-from ..models import URL
-import logging
+from sqlalchemy.orm import Session
+
 from ..logging.logger import get_logger
+from ..models import URL
 
 logger = get_logger(__name__)
 
@@ -18,7 +18,7 @@ class URLRepository:
         self.db.refresh(url)
         return url
 
-    def get_by_short_code(self, short_code: str) -> Optional[URL]:
+    def get_by_short_code(self, short_code: str) -> URL | None:
         # add logging for retrieving a URL mapping by short code
         logger.info(f"Retrieving URL mapping for short code: {short_code}")
         # Retrieve a URL mapping from the database based on the provided short code.

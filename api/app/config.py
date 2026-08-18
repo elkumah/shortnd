@@ -1,6 +1,7 @@
 import os
-from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from pydantic import computed_field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ENV_FILE = os.getenv("ENV_FILE", ".env")
 class Settings(BaseSettings):

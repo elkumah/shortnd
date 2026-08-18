@@ -2,12 +2,12 @@ import string
 from unittest.mock import Mock, patch
 
 import pytest
-from app.exceptions.custom_exceptions import URLNotFoundException
 
+from app.exceptions.custom_exceptions import URLNotFoundException
 from app.models import URL
 from app.services.url_service import (
-    URLService,
     MAX_RETRY_ATTEMPTS,
+    URLService,
 )
 
 
@@ -110,9 +110,8 @@ def test_generate_unique_short_code_raises_runtime_error_after_max_retries(
         URLService,
         "generate_short_code",
         return_value="collision",
-    ):
-        with pytest.raises(RuntimeError) as exc_info:
-            service.generate_unique_short_code()
+    ), pytest.raises(RuntimeError) as exc_info:
+        service.generate_unique_short_code()
 
     assert (
         str(exc_info.value)
@@ -166,11 +165,10 @@ def test_create_short_url_propagates_repository_exception(
         URLService,
         "generate_short_code",
         return_value="abc12345",
-    ):
-        with pytest.raises(Exception, match="Database error"):
-            service.create_short_url(
-                "https://example.com"
-            )
+    ), pytest.raises(Exception, match="Database error"):
+        service.create_short_url(
+            "https://example.com"
+        )
 
 
 # --------------------------------------------------------------------

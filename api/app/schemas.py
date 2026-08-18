@@ -1,6 +1,5 @@
-from pydantic import BaseModel
-from pydantic import HttpUrl
-from pydantic import Field
+from pydantic import BaseModel, Field, HttpUrl
+
 
 # Define a Pydantic model for the request body
 class URLRequest(BaseModel):

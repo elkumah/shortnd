@@ -1,11 +1,12 @@
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-from app.repositories.url_repository import URLRepository
-from app.models import URL
+
 from app.config import settings
 from app.main import app
-from fastapi.testclient import TestClient
+from app.models import URL
+from app.repositories.url_repository import URLRepository
 
 # Safety check to prevent running tests against the development database
 assert "shortnd_test" in settings.DATABASE_URL, (

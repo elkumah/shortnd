@@ -1,7 +1,7 @@
-import pytest 
+import pytest
 from sqlalchemy.exc import IntegrityError
-from app.models import URL
 
+from app.models import URL
 
 
 def test_create_url(repository):
