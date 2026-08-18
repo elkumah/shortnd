@@ -3,68 +3,66 @@ name: Shortnd CI
 "on":
   push:
     branches: [main, dev]
+
   pull_request:
     branches: [main, dev]
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: shortnd
+      POSTGRES_PASSWORD: shortnd
+      POSTGRES_DB: shortnd_test
+      BASE_URL: http://localhost:8000
+
     services:
       postgres:
         image: postgres:16-alpine
+
         env:
           POSTGRES_USER: shortnd
           POSTGRES_PASSWORD: shortnd
           POSTGRES_DB: shortnd_test
+
         ports:
           - 5432:5432
+
         options: >-
           --health-cmd="pg_isready -U shortnd -d shortnd_test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.14
+          python-version: "3.14"
+
       - name: Verify Python version
         run: |
           python --version
           pip --version
+
       - name: Install dependencies
         working-directory: api
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Verify PostgreSQL
-        env:
-          PGPASSWORD: shortnd
-        run: |
-          pg_isready -h localhost -p 5432 -U shortnd
-          psql -h localhost -p 5432 -U shortnd -d postgres -c "\l"
-      - name: Run alembic migrations
+
+      - name: Run Alembic migrations
         working-directory: api
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          POSTGRES_USER: shortnd
-          POSTGRES_PASSWORD: shortnd
-          POSTGRES_DB: shortnd_test
-          BASE_URL: http://localhost:8000
         run: |
           alembic upgrade head
 
       - name: Run tests
         working-directory: api
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          POSTGRES_USER: shortnd
-          POSTGRES_PASSWORD: shortnd
-          POSTGRES_DB: shortnd_test
-          BASE_URL: http://localhost:8000
         run: |
-          pytest --maxfail=1 --disable-warnings -q
+          pytest -v
