@@ -3,6 +3,10 @@ from fastapi.testclient import TestClient
 
 from app.config import settings
 from app.main import app
+from unittest.mock import MagicMock
+
+from sqlalchemy.exc import SQLAlchemyError
+from app.database import get_db
 
 client = TestClient(app)
 
@@ -138,3 +142,22 @@ def test_shorten_url_returns_422_for_empty_url():
 
     assert "detail" in data
     assert data["detail"][0]["loc"] == ["body", "url"]
+
+
+def test_health_check_returns_503_when_database_fails():
+    mock_db = MagicMock()
+    mock_db.execute.side_effect = SQLAlchemyError("Database unavailable")
+
+    def override_get_db():
+        return mock_db
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    try:
+        response = client.get("/health")
+
+        assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+        assert response.json()["detail"] == "Database connection failed"
+
+    finally:
+        app.dependency_overrides.clear()

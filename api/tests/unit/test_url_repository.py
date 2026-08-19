@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from app.models import URL
-
+from app.repositories.url_repository import URLRepository
 
 def test_create_url(repository):
     url = URL(
@@ -61,3 +61,25 @@ def test_create_generates_uuid_and_timestamp(repository):
     saved_url = repository.create(url)
     assert saved_url.id is not None
     assert saved_url.created_at is not None
+
+def test_exists_by_short_code_returns_true(db_session):
+    url = URL(
+        original_url="https://example.com/",
+        short_code="abc123",
+    )
+
+    db_session.add(url)
+    db_session.commit()
+
+    repository = URLRepository(db_session)
+
+    result = repository.exists_by_short_code("abc123")
+
+    assert result is True
+
+def test_exists_by_short_code_returns_false(db_session):
+    repository = URLRepository(db_session)
+
+    result = repository.exists_by_short_code("doesnotexist")
+
+    assert result is False

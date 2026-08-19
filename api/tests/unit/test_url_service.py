@@ -208,3 +208,18 @@ def test_get_url_by_short_code_raises_url_not_found_exception(
         match="No URL found for short code: abc12345",
     ):
         service.get_url_by_short_code("abc12345")
+
+def test_create_short_url_propagates_runtime_error(repository):
+    service = URLService(repository)
+
+    repository_error = RuntimeError(
+        "Failed to generate a unique short code after 5 attempts."
+    )
+
+    with patch.object(
+        service,
+        "generate_unique_short_code",
+        side_effect=repository_error,
+    ):
+        with pytest.raises(RuntimeError, match="Failed to generate a unique short code"):
+            service.create_short_url("https://example.com")

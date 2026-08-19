@@ -33,3 +33,5 @@ class URLRepository:
         statement = select(URL).where(URL.short_code == short_code)
         result = self.db.execute(statement)
         return result.scalar_one_or_none() is not None
+
+    
