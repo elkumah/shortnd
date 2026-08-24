@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from app.models import URL
 from app.repositories.url_repository import URLRepository
 
+
 def test_create_url(repository):
     url = URL(
         original_url="https://example.com",

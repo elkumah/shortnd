@@ -220,6 +220,5 @@ def test_create_short_url_propagates_runtime_error(repository):
         service,
         "generate_unique_short_code",
         side_effect=repository_error,
-    ):
-        with pytest.raises(RuntimeError, match="Failed to generate a unique short code"):
-            service.create_short_url("https://example.com")
+    ), pytest.raises(RuntimeError, match="Failed to generate a unique short code"):
+        service.create_short_url("https://example.com")

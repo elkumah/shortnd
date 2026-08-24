@@ -1,12 +1,12 @@
-from fastapi import status
-from fastapi.testclient import TestClient
-
-from app.config import settings
-from app.main import app
 from unittest.mock import MagicMock
 
+from fastapi import status
+from fastapi.testclient import TestClient
 from sqlalchemy.exc import SQLAlchemyError
+
+from app.config import settings
 from app.database import get_db
+from app.main import app
 
 client = TestClient(app)
 
