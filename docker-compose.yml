@@ -26,6 +26,7 @@ services:
       start_period: 10s
 
   api:
+    image: shortnd_api:ci
     build:
       context: .
       dockerfile: Dockerfile
