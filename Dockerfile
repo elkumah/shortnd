@@ -8,8 +8,8 @@ WORKDIR /build
 # Copy dependency definition first for better Docker caching
 COPY api/requirements.txt .
 
-# Install Python dependencies into a separate directory.
-# They will be copied into the runtime image later.
+# Install application dependencies into a separate directory.
+# pip remains available only in the builder stage.
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 
@@ -18,21 +18,34 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 # ============================================================
 FROM python:3.14-slim AS runtime
 
+# Update OS packages and clean apt cache
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy only the installed Python dependencies
-# from the builder stage.
+# Copy only application dependencies from the builder.
 COPY --from=builder /install /usr/local
 
-# Copy only the application source code
+# Remove pip and its metadata from the runtime image.
+# pip is only required during the build stage.
+RUN rm -rf \
+    /usr/local/lib/python3.14/site-packages/pip \
+    /usr/local/lib/python3.14/site-packages/pip-*.dist-info \
+    /usr/local/bin/pip \
+    /usr/local/bin/pip3 \
+    /usr/local/bin/pip3.14
+
+# Copy application source code
 COPY api/app ./app
 
-# Create a non-root user for running the application
+# Create a non-root user
 RUN addgroup --system appgroup && \
     adduser --system --ingroup appgroup appuser && \
     chown -R appuser:appgroup /app
 
-# Run the application as a non-root user
+# Run as non-root user
 USER appuser
 
 # FastAPI/Uvicorn listens on port 8000
