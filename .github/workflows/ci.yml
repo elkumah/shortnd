@@ -167,8 +167,23 @@ jobs:
         run: |
           docker images
           docker image inspect shortnd-api:${{ github.sha }}
+
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: shortnd-api:${{ github.sha }}
+          format: cyclonedx
+          output: sbom.cdx.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shortnd-api-sbom
+          path: sbom.cdx.json
+          retention-days: 30
+
       - name: Run Trivy security scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: shortnd-api:${{ github.sha }}
           format: table
@@ -176,3 +191,4 @@ jobs:
           ignore-unfixed: true
           vulnerability-type: os,library
           exit-code: 1
+          skip-setup-trivy: true
