@@ -54,7 +54,7 @@ htmlcov/
 *.tfstate.*
 crash.log
 terraform.tfvars
-
+*.tfvars
 # Kubernetes Secrets 
 
 secrets.yaml
