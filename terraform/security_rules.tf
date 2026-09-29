@@ -21,10 +21,10 @@ resource "aws_vpc_security_group_ingress_rule" "api_from_lb" {
   security_group_id            = aws_security_group.api.id
   referenced_security_group_id = aws_security_group.load_balancer.id
 
-  from_port   = 80
-  to_port     = 80
+  from_port   = 8000
+  to_port     = 8000
   ip_protocol = "tcp"
-  description = "Allow HTTP traffic from the load balancer to the API"
+  description = "Allow API traffic from the load balancer"
 }
 
 resource "aws_vpc_security_group_ingress_rule" "db_from_api" {
@@ -36,4 +36,4 @@ resource "aws_vpc_security_group_ingress_rule" "db_from_api" {
   ip_protocol = "tcp"
 
   description = "Allow PostgreSQL traffic from the Shortnd API"
-}
+} 
