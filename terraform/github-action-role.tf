@@ -22,7 +22,10 @@ resource "aws_iam_role" "github_actions" {
           }
 
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:elkumah/shortnd:*"
+            "token.actions.githubusercontent.com:sub" = [
+              "repo:elkumah/shortnd:ref:refs/heads/dev",
+              "repo:elkumah/shortnd:ref:refs/heads/main"
+            ]
           }
         }
       }

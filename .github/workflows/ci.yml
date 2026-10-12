@@ -7,6 +7,10 @@ name: Shortnd CI
   pull_request:
     branches: [main, dev]
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -192,3 +196,52 @@ jobs:
           vulnerability-type: os,library
           exit-code: 1
           skip-setup-trivy: true
+
+  publish-image:
+    name: Publish Docker image to ECR
+    runs-on: ubuntu-latest
+    needs: security-scan
+
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPOSITORY: shortnd-api
+      IMAGE_TAG: ${{ github.sha }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Download verified Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: shortnd-api-docker-image
+          path: .
+
+      - name: Load Docker image
+        run: docker load --input shortnd-api.tar
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag verified image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag shortnd-api:${{ github.sha }} \
+            "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Push Docker image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
