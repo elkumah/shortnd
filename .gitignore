@@ -48,7 +48,9 @@ htmlcov/
 *.sqlite3
 
 # Terraform 
-
+terraform-state-backup.json
+*.tfstate
+*.tfstate.*
 .terraform/
 *.tfstate
 *.tfstate.*
