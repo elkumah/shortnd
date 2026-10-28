@@ -42,8 +42,12 @@ resource "aws_db_instance" "shortnd" {
   copy_tags_to_snapshot   = true
 
   auto_minor_version_upgrade = true
-  deletion_protection        = false
-  skip_final_snapshot        = true
+  deletion_protection        = true
+  skip_final_snapshot        = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 
   tags = {
     Name        = "shortnd-postgres"
