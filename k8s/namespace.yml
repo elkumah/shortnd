@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shortnd
+  labels:
+    app.kubernetes.io/part-of: shortnd
+    environment: dev
