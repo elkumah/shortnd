@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+
 from .config import settings
 from .database import get_db
 from .exceptions import URLNotFoundException, url_not_found_exception_handler
@@ -12,7 +13,6 @@ from .logging import get_logger
 from .repositories.url_repository import URLRepository
 from .schemas import HealthCheckResponse, URLRequest, URLResponse
 from .services.url_service import URLService
-
 
 logger = get_logger(__name__)
 
