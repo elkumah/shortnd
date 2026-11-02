@@ -53,7 +53,7 @@ def test_shorten_url_returns_422_for_invalid_url():
     }
     response = client.post("/shorten/", json=payload)
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     data = response.json()
     assert "detail" in data
@@ -68,7 +68,7 @@ def test_shorten_url_returns_422_when_url_field_is_missing():
         json=payload
     )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     data = response.json()
 
@@ -119,7 +119,7 @@ def test_redirect_returns_404_for_nonexistent_short_code():
 def test_shorten_url_returns_422_when_request_body_is_missing():
     response = client.post("/shorten/")
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     data = response.json()
 
@@ -136,7 +136,7 @@ def test_shorten_url_returns_422_for_empty_url():
         json=payload
     )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     data = response.json()
 
