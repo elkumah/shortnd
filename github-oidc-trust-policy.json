@@ -1,5 +1,24 @@
-aws iam update-assume-role-policy \
-  --role-name shortnd-github-actions-role \
-  --policy-document file://github-oidc-trust-policy.json \
-  --profile shortnd-dev
-  
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::825347768470:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": [
+            "repo:elkumah/shortnd:ref:refs/heads/dev",
+            "repo:elkumah/shortnd:ref:refs/heads/main",
+            "repo:elkumah/shortnd:ref:refs/heads/feat/deploy"
+          ]
+        }
+      }
+    }
+  ]
+}
