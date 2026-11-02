@@ -1,26 +1,23 @@
-
-import asyncio
 from unittest.mock import patch
 
-from app.main import startup_event, shutdown_event
+from fastapi.testclient import TestClient
+
+from app.main import app
 
 
 def test_startup_event_logs_message():
-    """Verify that application startup logs the expected message."""
     with patch("app.main.logger.info") as mock_logger:
-        asyncio.run(startup_event())
-
-    mock_logger.assert_called_once_with(
-        "Starting up the application..."
-    )
+        with TestClient(app):
+            mock_logger.assert_any_call(
+                "Starting up the application..."
+            )
 
 
 def test_shutdown_event_logs_message():
-    """Verify that application shutdown logs the expected message."""
     with patch("app.main.logger.info") as mock_logger:
-        asyncio.run(shutdown_event())
+        with TestClient(app):
+            pass
 
-    mock_logger.assert_called_once_with(
-        "Shutting down the application..."
-    )
-
+        mock_logger.assert_any_call(
+            "Shutting down the application..."
+        )

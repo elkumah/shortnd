@@ -1,10 +1,10 @@
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
 from .config import settings
 from .database import get_db
 from .exceptions import URLNotFoundException, url_not_found_exception_handler
@@ -13,18 +13,24 @@ from .repositories.url_repository import URLRepository
 from .schemas import HealthCheckResponse, URLRequest, URLResponse
 from .services.url_service import URLService
 
+
 logger = get_logger(__name__)
-app = FastAPI()
-app.add_exception_handler(URLNotFoundException, url_not_found_exception_handler)
 
-
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     logger.info("Starting up the application...")
 
-@app.on_event("shutdown")
-async def shutdown_event():
+    yield
+
     logger.info("Shutting down the application...")
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.add_exception_handler(
+    URLNotFoundException,
+    url_not_found_exception_handler
+)
 
 # Add health check endpoint
 @app.get("/health", response_model=HealthCheckResponse)
