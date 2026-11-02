@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 jobs:
-  # Temporary diagnostic: verify GitHub OIDC authentication. Check that the GitHub Actions workflow can assume the AWS IAM role for ECR access.
+  # Temporary diagnostic: verify GitHub OIDC authentication. Check that the GitHub Actions workflow can assume the AWS IAM role for ECR.
   verify-aws-identity:
     name: Verify AWS identity
     runs-on: ubuntu-latest
