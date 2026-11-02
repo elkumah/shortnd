@@ -1,0 +1,5 @@
+aws iam update-assume-role-policy \
+  --role-name shortnd-github-actions-role \
+  --policy-document file://github-oidc-trust-policy.json \
+  --profile shortnd-dev
+  
