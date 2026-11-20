@@ -2,29 +2,15 @@ name: Shortnd CI
 
 "on":
   push:
-    branches: [main, dev, feat/deploy]
+    branches: [main, dev, feat/**, fix/**, hotfix/**]
 
   pull_request:
     branches: [main, dev]
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  # Temporary diagnostic: verify GitHub OIDC authentication. Check that the GitHub Actions workflow can assume the AWS IAM role for ECR.
-  verify-aws-identity:
-    name: Verify AWS identity
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Configure AWS credentials using OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-          aws-region: us-east-1
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
   lint:
     runs-on: ubuntu-latest
 
@@ -85,7 +71,7 @@ jobs:
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
       POSTGRES_USER: shortnd
-      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      POSTGRES_PASSWORD: shortnd_ci_test_password
       POSTGRES_DB: shortnd_test
       BASE_URL: http://localhost:8000
 
@@ -95,7 +81,7 @@ jobs:
 
         env:
           POSTGRES_USER: shortnd
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_PASSWORD: shortnd_ci_test_password
           POSTGRES_DB: shortnd_test
 
         ports:
@@ -260,3 +246,33 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+  terraform-validation:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Check Terraform formatting
+        working-directory: terraform-aws
+        run: terraform fmt -check -recursive
+
+      - name: Initialize main infrastructure
+        working-directory: terraform-aws
+        run: terraform init -backend=false
+
+      - name: Validate main infrastructure
+        working-directory: terraform-aws
+        run: terraform validate
+
+      - name: Initialize networking
+        working-directory: terraform-aws/networking
+        run: terraform init -backend=false
+
+      - name: Validate networking
+        working-directory: terraform-aws/networking
+        run: terraform validate
