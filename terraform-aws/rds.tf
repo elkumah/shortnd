@@ -1,12 +1,9 @@
 # DB subnet group for Shortnd PostgreSQL
 resource "aws_db_subnet_group" "shortnd" {
   name        = "shortnd-db-subnet-group"
-  description = "Private subnet group for Shortnd PostgreSQL"
+  description = "Private subnet group for Shortnd PostgreSQL database"
 
-  subnet_ids = [
-    aws_subnet.private_1a.id,
-    aws_subnet.private_1b.id
-  ]
+  subnet_ids = data.terraform_remote_state.networking.outputs.private_subnet_ids
 
   tags = {
     Name        = "shortnd-db-subnet-group"
@@ -14,7 +11,6 @@ resource "aws_db_subnet_group" "shortnd" {
     Project     = "shortnd"
   }
 }
-
 # PostgreSQL database instance
 resource "aws_db_instance" "shortnd" {
   identifier = "shortnd-postgres"
@@ -32,8 +28,10 @@ resource "aws_db_instance" "shortnd" {
   manage_master_user_password = true
   port                        = 5432
 
-  db_subnet_group_name   = aws_db_subnet_group.shortnd.name
-  vpc_security_group_ids = [aws_security_group.db.id]
+  db_subnet_group_name = aws_db_subnet_group.shortnd.name
+  vpc_security_group_ids = [
+    data.terraform_remote_state.networking.outputs.rds_security_group_id
+  ]
 
   publicly_accessible = false
   multi_az            = false

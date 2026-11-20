@@ -1,7 +1,9 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "github_actions" {
-  name = "shortnd-github-actions-role"
+  name        = "shortnd-github-actions-role"
+  description = "Allows trusted Shortnd GitHub Actions workflows to authenticate to AWS using OIDC"
+
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

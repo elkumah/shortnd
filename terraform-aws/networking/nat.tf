@@ -19,7 +19,8 @@ resource "aws_nat_gateway" "nat" {
   }
 
   depends_on = [
-    aws_internet_gateway.shortnd
+    aws_internet_gateway.shortnd,
+    aws_route_table_association.public_1a
   ]
 }
 

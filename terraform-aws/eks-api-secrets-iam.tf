@@ -27,7 +27,8 @@ resource "aws_iam_policy" "shortnd_api_secrets" {
 }
 # IAM role trusted by the Shortnd API Kubernetes service account
 resource "aws_iam_role" "shortnd_api" {
-  name = "shortnd-api-secrets-role"
+  name        = "shortnd-api-secrets-role"
+  description = "IAM role for the Shortnd API to retrieve its RDS credentials"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
