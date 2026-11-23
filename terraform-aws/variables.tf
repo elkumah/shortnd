@@ -3,6 +3,16 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+variable "aws_account_id" {
+  description = "AWS account ID where Shortnd infra will be deployed"
+  type        = string
+  default     = "723732457731"
+}
+variable "aws_profile" {
+  description = "AWS profile to use for Shortnd infra deployment"
+  type        = string
+  default     = "shortndTerraform"
+}
 variable "eks_cluster_name" {
   description = "Name of the EKS cluster"
   type        = string

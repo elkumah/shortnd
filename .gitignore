@@ -59,6 +59,9 @@ terraform-state-backup.json
 crash.log
 terraform.tfvars
 *.tfvars
+*.tfvars.json
+!*.tfvars.example
+
 # Kubernetes Secrets 
 
 secrets.yaml
@@ -71,3 +74,5 @@ docker-compose.override.yml
 
 *.swp
 *.swo
+# State backups
+*state-backup*.json

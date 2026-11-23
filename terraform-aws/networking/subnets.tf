@@ -4,10 +4,11 @@ resource "aws_subnet" "public_1a" {
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
   tags = {
-    Name        = "shortnd-public-subnet-a"
-    Environment = "dev"
-    Project     = "shortnd"
-    Tier        = "public"
+    Name                     = "shortnd-public-subnet-a"
+    Environment              = "dev"
+    Project                  = "shortnd"
+    Tier                     = "public"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
@@ -17,9 +18,10 @@ resource "aws_subnet" "public_1b" {
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
   tags = {
-    Name        = "shortnd-public-subnet-b"
-    Environment = "dev"
-    Project     = "shortnd"
-    Tier        = "public"
+    Name                     = "shortnd-public-subnet-b"
+    Environment              = "dev"
+    Project                  = "shortnd"
+    Tier                     = "public"
+    "kubernetes.io/role/elb" = "1"
   }
 }
