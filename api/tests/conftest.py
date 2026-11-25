@@ -25,7 +25,6 @@ TestingSessionLocal = sessionmaker(
 
 
 @pytest.fixture
-
 def db_session() -> Session:
     session = TestingSessionLocal()
     session.query(URL).delete()  # Clear the URL table before each test
@@ -36,12 +35,14 @@ def db_session() -> Session:
         session.rollback()
         session.close()
 
+
 @pytest.fixture
 def repository(db_session) -> URLRepository:
     """
     Create a URLRepository using the test database session.
     """
     return URLRepository(db_session)
+
 
 @pytest.fixture
 def client():

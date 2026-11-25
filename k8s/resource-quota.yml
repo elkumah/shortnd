@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-quota
+  namespace: shortnd
+spec:
+  hard:
+    requests.cpu: "800m"
+    requests.memory: "700Mi"
+    limits.cpu: "1500m"
+    limits.memory: "1100Mi"
+    pods: "5"

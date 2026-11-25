@@ -1,4 +1,3 @@
-
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
@@ -6,6 +5,7 @@ from ..logging.logger import get_logger
 from .custom_exceptions import URLNotFoundException
 
 logger = get_logger(__name__)
+
 
 async def url_not_found_exception_handler(request: Request, exc: URLNotFoundException):
     """
@@ -20,8 +20,7 @@ async def url_not_found_exception_handler(request: Request, exc: URLNotFoundExce
             "error": {
                 "code": "URL_NOT_FOUND",
                 "message": str(exc),
-                "short_code": exc.short_code
-            }
-        }
+                "short_code": exc.short_code,
+            },
+        },
     )
-    
