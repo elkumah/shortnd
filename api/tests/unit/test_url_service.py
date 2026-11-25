@@ -27,6 +27,7 @@ def service(mock_repository):
 # generate_short_code()
 # --------------------------------------------------------------------
 
+
 def test_generate_short_code_returns_string(service):
     short_code = service.generate_short_code()
 
@@ -53,6 +54,7 @@ def test_generate_short_code_contains_url_safe_characters(service):
 # generate_unique_short_code()
 # --------------------------------------------------------------------
 
+
 def test_generate_unique_short_code_returns_unique_code(
     service,
     mock_repository,
@@ -68,9 +70,7 @@ def test_generate_unique_short_code_returns_unique_code(
 
     assert short_code == "abc12345"
 
-    mock_repository.get_by_short_code.assert_called_once_with(
-        "abc12345"
-    )
+    mock_repository.get_by_short_code.assert_called_once_with("abc12345")
 
 
 def test_generate_unique_short_code_retries_after_collision(
@@ -106,16 +106,18 @@ def test_generate_unique_short_code_raises_runtime_error_after_max_retries(
         short_code="collision",
     )
 
-    with patch.object(
-        URLService,
-        "generate_short_code",
-        return_value="collision",
-    ), pytest.raises(RuntimeError) as exc_info:
+    with (
+        patch.object(
+            URLService,
+            "generate_short_code",
+            return_value="collision",
+        ),
+        pytest.raises(RuntimeError) as exc_info,
+    ):
         service.generate_unique_short_code()
 
     assert (
-        str(exc_info.value)
-        == f"Failed to generate a unique short code after "
+        str(exc_info.value) == f"Failed to generate a unique short code after "
         f"{MAX_RETRY_ATTEMPTS} attempts."
     )
 
@@ -123,6 +125,7 @@ def test_generate_unique_short_code_raises_runtime_error_after_max_retries(
 # --------------------------------------------------------------------
 # create_short_url()
 # --------------------------------------------------------------------
+
 
 def test_create_short_url_success(
     service,
@@ -141,9 +144,7 @@ def test_create_short_url_success(
         "generate_short_code",
         return_value="abc12345",
     ):
-        result = service.create_short_url(
-            "https://example.com"
-        )
+        result = service.create_short_url("https://example.com")
 
     assert result.original_url == "https://example.com"
     assert result.short_code == "abc12345"
@@ -157,23 +158,23 @@ def test_create_short_url_propagates_repository_exception(
 ):
     mock_repository.get_by_short_code.return_value = None
 
-    mock_repository.create.side_effect = Exception(
-        "Database error"
-    )
+    mock_repository.create.side_effect = Exception("Database error")
 
-    with patch.object(
-        URLService,
-        "generate_short_code",
-        return_value="abc12345",
-    ), pytest.raises(Exception, match="Database error"):
-        service.create_short_url(
-            "https://example.com"
-        )
+    with (
+        patch.object(
+            URLService,
+            "generate_short_code",
+            return_value="abc12345",
+        ),
+        pytest.raises(Exception, match="Database error"),
+    ):
+        service.create_short_url("https://example.com")
 
 
 # --------------------------------------------------------------------
 # get_url_by_short_code()
 # --------------------------------------------------------------------
+
 
 def test_get_url_by_short_code_returns_url(
     service,
@@ -186,15 +187,11 @@ def test_get_url_by_short_code_returns_url(
 
     mock_repository.get_by_short_code.return_value = url
 
-    result = service.get_url_by_short_code(
-        "abc12345"
-    )
+    result = service.get_url_by_short_code("abc12345")
 
     assert result == url
 
-    mock_repository.get_by_short_code.assert_called_once_with(
-        "abc12345"
-    )
+    mock_repository.get_by_short_code.assert_called_once_with("abc12345")
 
 
 def test_get_url_by_short_code_raises_url_not_found_exception(
@@ -209,6 +206,7 @@ def test_get_url_by_short_code_raises_url_not_found_exception(
     ):
         service.get_url_by_short_code("abc12345")
 
+
 def test_create_short_url_propagates_runtime_error(repository):
     service = URLService(repository)
 
@@ -216,9 +214,12 @@ def test_create_short_url_propagates_runtime_error(repository):
         "Failed to generate a unique short code after 5 attempts."
     )
 
-    with patch.object(
-        service,
-        "generate_unique_short_code",
-        side_effect=repository_error,
-    ), pytest.raises(RuntimeError, match="Failed to generate a unique short code"):
+    with (
+        patch.object(
+            service,
+            "generate_unique_short_code",
+            side_effect=repository_error,
+        ),
+        pytest.raises(RuntimeError, match="Failed to generate a unique short code"),
+    ):
         service.create_short_url("https://example.com")

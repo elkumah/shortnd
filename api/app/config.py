@@ -3,7 +3,8 @@ import os
 from functools import cached_property
 
 import boto3
-from pydantic import computed_field
+from botocore.exceptions import BotoCoreError, ClientError
+from pydantic import SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import URL
 
@@ -19,23 +20,44 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    # Database connection settings
     POSTGRES_HOST: str
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str
+
+    # Application settings
     BASE_URL: str
 
+    # AWS configuration
     AWS_REGION: str = "us-east-1"
     AWS_SECRET_ARN: str | None = None
 
-    # Used for local development and testing.
+    # Local development and CI credentials
     POSTGRES_USER: str | None = None
-    POSTGRES_PASSWORD: str | None = None
+    POSTGRES_PASSWORD: SecretStr | None = None
 
     @cached_property
     def database_credentials(self) -> dict[str, str]:
-        """Load credentials from AWS Secrets Manager or local settings."""
+        """Retrieve database credentials from AWS Secrets Manager or local environment."""
 
         if self.AWS_SECRET_ARN:
+            return self._get_aws_database_credentials()
+
+        if self.POSTGRES_USER and self.POSTGRES_PASSWORD:
+            return {
+                "username": self.POSTGRES_USER,
+                "password": self.POSTGRES_PASSWORD.get_secret_value(),
+            }
+
+        raise ValueError(
+            "Configure AWS_SECRET_ARN for AWS deployments, or set "
+            "POSTGRES_USER and POSTGRES_PASSWORD for local development."
+        )
+
+    def _get_aws_database_credentials(self) -> dict[str, str]:
+        """Retrieve database credentials from AWS Secrets Manager."""
+
+        try:
             client = boto3.client(
                 "secretsmanager",
                 region_name=self.AWS_REGION,
@@ -46,6 +68,7 @@ class Settings(BaseSettings):
             )
 
             secret_string = response.get("SecretString")
+
             if not secret_string:
                 raise ValueError(
                     "The configured RDS secret does not contain SecretString."
@@ -66,26 +89,25 @@ class Settings(BaseSettings):
                 "password": password,
             }
 
-        if self.POSTGRES_USER and self.POSTGRES_PASSWORD:
-            return {
-                "username": self.POSTGRES_USER,
-                "password": self.POSTGRES_PASSWORD,
-            }
+        except (ClientError, BotoCoreError) as exc:
+            raise RuntimeError(
+                "Unable to retrieve database credentials from AWS Secrets Manager."
+            ) from exc
 
-        raise ValueError(
-            "Configure AWS_SECRET_ARN for AWS deployments, or set "
-            "POSTGRES_USER and POSTGRES_PASSWORD for local development."
-        )
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                "The configured RDS secret contains invalid JSON."
+            ) from exc
 
     @computed_field
-    @property
-    def DATABASE_URL(self) -> str:
-        """Build the SQLAlchemy database URL."""
+    @cached_property
+    def DATABASE_URL(self) -> URL:
+        """Build a SQLAlchemy URL without rendering credentials into plaintext."""
 
         credentials = self.database_credentials
 
-        database_url = URL.create(
-            drivername="postgresql",
+        return URL.create(
+            drivername="postgresql+psycopg2",
             username=credentials["username"],
             password=credentials["password"],
             host=self.POSTGRES_HOST,
@@ -93,8 +115,5 @@ class Settings(BaseSettings):
             database=self.POSTGRES_DB,
         )
 
-        return database_url.render_as_string(hide_password=False)
-
 
 settings = Settings()
-

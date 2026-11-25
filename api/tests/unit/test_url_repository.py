@@ -18,6 +18,7 @@ def test_create_url(repository):
     assert saved_url.short_code == "create01"
     assert saved_url.created_at is not None
 
+
 def test_get_by_short_code_returns_url(repository):
     url = URL(
         original_url="https://example.com",
@@ -32,9 +33,11 @@ def test_get_by_short_code_returns_url(repository):
     assert result.original_url == "https://example.com"
     assert result.short_code == "get00001"
 
+
 def test_get_by_short_code_returns_none_when_not_found(repository):
     result = repository.get_by_short_code("does-not-exist")
     assert result is None
+
 
 def test_create_duplicate_short_code_raises_integrity_error(
     repository,
@@ -57,11 +60,13 @@ def test_create_duplicate_short_code_raises_integrity_error(
     # Reset the session after the failed commit
     repository.db.rollback()
 
+
 def test_create_generates_uuid_and_timestamp(repository):
     url = URL(original_url="https://example.com", short_code="uid12345")
     saved_url = repository.create(url)
     assert saved_url.id is not None
     assert saved_url.created_at is not None
+
 
 def test_exists_by_short_code_returns_true(db_session):
     url = URL(
@@ -77,6 +82,7 @@ def test_exists_by_short_code_returns_true(db_session):
     result = repository.exists_by_short_code("abc123")
 
     assert result is True
+
 
 def test_exists_by_short_code_returns_false(db_session):
     repository = URLRepository(db_session)

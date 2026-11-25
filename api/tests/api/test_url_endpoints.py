@@ -31,10 +31,9 @@ def test_health_check_endpoint():
 
     assert data["status"] == "healthy"
 
+
 def test_shorten_url_successfully_creates_short_url():
-    payload = {
-        "url": "https://example.com"
-    }
+    payload = {"url": "https://example.com"}
     response = client.post("/shorten/", json=payload)
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -47,10 +46,9 @@ def test_shorten_url_successfully_creates_short_url():
     assert data["short_code"] != ""
     assert data["shortened_url"].startswith(settings.BASE_URL)
 
+
 def test_shorten_url_returns_422_for_invalid_url():
-    payload = {
-        "url": "invalid-url"
-    }
+    payload = {"url": "invalid-url"}
     response = client.post("/shorten/", json=payload)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
@@ -60,13 +58,11 @@ def test_shorten_url_returns_422_for_invalid_url():
 
     assert data["detail"][0]["loc"] == ["body", "url"]
 
+
 def test_shorten_url_returns_422_when_url_field_is_missing():
     payload = {}
 
-    response = client.post(
-        "/shorten/",
-        json=payload
-    )
+    response = client.post("/shorten/", json=payload)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
@@ -78,11 +74,10 @@ def test_shorten_url_returns_422_when_url_field_is_missing():
 
     assert data["detail"][0]["type"] == "missing"
 
+
 def test_redirect_returns_original_url():
     # First, create a short URL
-    payload = {
-        "url": "https://example.com"
-    }
+    payload = {"url": "https://example.com"}
     create_response = client.post("/shorten/", json=payload)
     assert create_response.status_code == status.HTTP_201_CREATED
     short_code = create_response.json()["short_code"]
@@ -91,13 +86,11 @@ def test_redirect_returns_original_url():
 
     assert redirect_response.status_code == status.HTTP_302_FOUND
 
-    assert (redirect_response.headers["location"] == "https://example.com/")
+    assert redirect_response.headers["location"] == "https://example.com/"
+
 
 def test_redirect_returns_404_for_nonexistent_short_code():
-    response = client.get(
-        "/nonexistentcode",
-        follow_redirects=False
-    )
+    response = client.get("/nonexistentcode", follow_redirects=False)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -107,15 +100,11 @@ def test_redirect_returns_404_for_nonexistent_short_code():
 
     assert data["error"]["code"] == "URL_NOT_FOUND"
 
-    assert (
-        data["error"]["message"]
-        == "No URL found for short code: nonexistentcode"
-    )
+    assert data["error"]["message"] == "No URL found for short code: nonexistentcode"
 
-    assert (
-        data["error"]["short_code"]
-        == "nonexistentcode"
-    )
+    assert data["error"]["short_code"] == "nonexistentcode"
+
+
 def test_shorten_url_returns_422_when_request_body_is_missing():
     response = client.post("/shorten/")
 
@@ -126,15 +115,11 @@ def test_shorten_url_returns_422_when_request_body_is_missing():
     assert "detail" in data
     assert data["detail"][0]["loc"] == ["body"]
 
-def test_shorten_url_returns_422_for_empty_url():
-    payload = {
-        "url": ""
-    }
 
-    response = client.post(
-        "/shorten/",
-        json=payload
-    )
+def test_shorten_url_returns_422_for_empty_url():
+    payload = {"url": ""}
+
+    response = client.post("/shorten/", json=payload)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 

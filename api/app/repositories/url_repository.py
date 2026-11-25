@@ -1,4 +1,3 @@
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -7,10 +6,12 @@ from ..models import URL
 
 logger = get_logger(__name__)
 
+
 class URLRepository:
     def __init__(self, db: Session):
         self.db = db
-    def create(self,url: URL) -> URL:
+
+    def create(self, url: URL) -> URL:
         # add logging for creating a new URL mapping
         logger.info(f"Creating a new URL mapping for: {url.original_url}")
         self.db.add(url)
@@ -33,5 +34,3 @@ class URLRepository:
         statement = select(URL).where(URL.short_code == short_code)
         result = self.db.execute(statement)
         return result.scalar_one_or_none() is not None
-
-    

@@ -1,27 +1,23 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import create_engine, pool
 
 from alembic import context
-
-# Import models so Alembic can discover them
 from app.config import settings
 from app.database import Base
+from app.models import URL  # noqa: F401
 
 config = context.config
-
-# Use the same database URL as the FastAPI application
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Tell Alembic which models to inspect
+# Make application models available to Alembic.
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in offline mode."""
+    """Run migrations without creating a database connection."""
 
     context.configure(
         url=settings.DATABASE_URL,
@@ -35,11 +31,10 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in online mode."""
+    """Run migrations using a live database connection."""
 
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
+    connectable = create_engine(
+        settings.DATABASE_URL,
         poolclass=pool.NullPool,
     )
 
@@ -52,6 +47,8 @@ def run_migrations_online() -> None:
 
         with context.begin_transaction():
             context.run_migrations()
+
+    connectable.dispose()
 
 
 if context.is_offline_mode():

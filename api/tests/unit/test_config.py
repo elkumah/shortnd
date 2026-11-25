@@ -1,4 +1,3 @@
-
 import json
 from unittest.mock import MagicMock, patch
 
@@ -33,9 +32,7 @@ def test_database_credentials_from_environment(base_settings):
 
 
 @patch("app.config.boto3.client")
-def test_database_credentials_from_secrets_manager(
-    mock_boto_client, base_settings
-):
+def test_database_credentials_from_secrets_manager(mock_boto_client, base_settings):
     """Retrieve database credentials from AWS Secrets Manager."""
     mock_client = MagicMock()
     mock_boto_client.return_value = mock_client
@@ -68,7 +65,9 @@ def test_database_credentials_from_secrets_manager(
     )
 
 
-@pytest.mark.parametrize("secret_response", [{}, {"SecretString": ""}, {"SecretString": None}])
+@pytest.mark.parametrize(
+    "secret_response", [{}, {"SecretString": ""}, {"SecretString": None}]
+)
 @patch("app.config.boto3.client")
 def test_missing_secret_string_raises_value_error(
     mock_boto_client, secret_response, base_settings
@@ -104,9 +103,7 @@ def test_invalid_secret_credentials_raise_value_error(
     """Reject secrets without both a username and password."""
     mock_client = MagicMock()
     mock_boto_client.return_value = mock_client
-    mock_client.get_secret_value.return_value = {
-        "SecretString": json.dumps(secret)
-    }
+    mock_client.get_secret_value.return_value = {"SecretString": json.dumps(secret)}
 
     settings = Settings(
         **base_settings,
@@ -118,7 +115,6 @@ def test_invalid_secret_credentials_raise_value_error(
         match="must contain username and password fields",
     ):
         _ = settings.database_credentials
-
 
 
 def test_missing_all_credentials_raises_value_error(base_settings):
@@ -147,8 +143,6 @@ def test_missing_all_credentials_raises_value_error(base_settings):
         _ = settings.database_credentials
 
 
-
-
 def test_database_url_uses_environment_credentials(base_settings):
     """Build a PostgreSQL URL using local credentials."""
     settings = Settings(
@@ -157,9 +151,12 @@ def test_database_url_uses_environment_credentials(base_settings):
         POSTGRES_PASSWORD="test_password",
     )
 
-    assert settings.DATABASE_URL == (
-        "postgresql://test_user:test_password@localhost:5432/shortnd_test"
-    )
+    assert settings.DATABASE_URL.drivername == "postgresql+psycopg2"
+    assert settings.DATABASE_URL.username == "test_user"
+    assert settings.DATABASE_URL.password == "test_password"
+    assert settings.DATABASE_URL.host == "localhost"
+    assert settings.DATABASE_URL.port == 5432
+    assert settings.DATABASE_URL.database == "shortnd_test"
 
 
 def test_database_url_uses_secrets_manager_credentials(base_settings):
@@ -181,8 +178,8 @@ def test_database_url_uses_secrets_manager_credentials(base_settings):
             AWS_SECRET_ARN="test-secret-arn",
         )
 
-        assert settings.DATABASE_URL == (
-            "postgresql://shortnd_admin:test_secret_password@"
-            "localhost:5432/shortnd_test"
-        )
-
+        assert settings.DATABASE_URL.username == "shortnd_admin"
+        assert settings.DATABASE_URL.password == "test_secret_password"
+        assert settings.DATABASE_URL.host == "localhost"
+        assert settings.DATABASE_URL.port == 5432
+        assert settings.DATABASE_URL.database == "shortnd_test"

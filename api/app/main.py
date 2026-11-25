@@ -16,6 +16,7 @@ from .services.url_service import URLService
 
 logger = get_logger(__name__)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting up the application...")
@@ -27,14 +28,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.add_exception_handler(
-    URLNotFoundException,
-    url_not_found_exception_handler
-)
+app.add_exception_handler(URLNotFoundException, url_not_found_exception_handler)
+
 
 # Add health check endpoint
 @app.get("/health", response_model=HealthCheckResponse)
-
 def health_check(db: Session = Depends(get_db)):
     """
     Verifies application health and PostgreSQL connectivity.
@@ -48,17 +46,15 @@ def health_check(db: Session = Depends(get_db)):
         logger.error(f"Health check failed: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database connection failed"
+            detail="Database connection failed",
         )
-   
+
 
 @app.get("/")
 def root():
     logger.info("Root endpoint accessed")
-    return {
-    "message": "Secure URL Shortener API",
-    "version": "1.0.0"
-}
+    return {"message": "Secure URL Shortener API", "version": "1.0.0"}
+
 
 def get_url_service(db: Session = Depends(get_db)) -> URLService:
     """
@@ -68,23 +64,28 @@ def get_url_service(db: Session = Depends(get_db)) -> URLService:
     # Create and return a URLService instance using the URLRepository
     return URLService(url_repository)
 
+
 @app.post("/shorten/", response_model=URLResponse, status_code=status.HTTP_201_CREATED)
-async def shorten_url( url_request: URLRequest,url_service: URLService = Depends(get_url_service)):
+async def shorten_url(
+    url_request: URLRequest, url_service: URLService = Depends(get_url_service)
+):
     url_record = url_service.create_short_url(str(url_request.url))
 
     return URLResponse(
         short_code=url_record.short_code,
-        shortened_url=f"{settings.BASE_URL}/{url_record.short_code}"
+        shortened_url=f"{settings.BASE_URL}/{url_record.short_code}",
     )
-    
+
+
 # Return redirect response to the original URL based on the provided short code.
 
+
 @app.get("/{short_code}")
-async def redirect_to_original_url(short_code: str, url_service: URLService = Depends(get_url_service)):
-    
-        url_record = url_service.get_url_by_short_code(short_code)
-        return RedirectResponse(
-            url=url_record.original_url,
-            status_code=status.HTTP_302_FOUND
-        )
-    
+async def redirect_to_original_url(
+    short_code: str, url_service: URLService = Depends(get_url_service)
+):
+
+    url_record = url_service.get_url_by_short_code(short_code)
+    return RedirectResponse(
+        url=url_record.original_url, status_code=status.HTTP_302_FOUND
+    )

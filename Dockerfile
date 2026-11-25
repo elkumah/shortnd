@@ -40,6 +40,9 @@ RUN rm -rf \
 # Copy application source code
 COPY api/app ./app
 
+# Copy Alembic migration infrastructure
+COPY api/alembic ./alembic
+COPY api/alembic.ini ./alembic.ini
 # Create a non-root user
 RUN addgroup --system appgroup && \
     adduser --system --ingroup appgroup appuser && \
