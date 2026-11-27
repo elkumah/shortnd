@@ -53,3 +53,14 @@ resource "aws_db_instance" "shortnd" {
     Project     = "shortnd"
   }
 }
+# Allow PostgreSQL connections from the EKS cluster security group
+resource "aws_vpc_security_group_ingress_rule" "rds_from_eks_cluster" {
+  security_group_id = data.terraform_remote_state.networking.outputs.rds_security_group_id
+
+  description                  = "Allow PostgreSQL traffic from EKS cluster nodes"
+  referenced_security_group_id = aws_eks_cluster.shortnd.vpc_config[0].cluster_security_group_id
+
+  from_port   = 5432
+  to_port     = 5432
+  ip_protocol = "tcp"
+}
