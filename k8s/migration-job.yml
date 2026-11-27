@@ -1,0 +1,73 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shortnd-db-migration
+  namespace: shortnd
+  labels:
+    app.kubernetes.io/name: shortnd-api
+    app.kubernetes.io/component: database-migration
+
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+
+  template:
+    metadata:
+      labels:
+        app: shortnd-db-migration
+
+    spec:
+      restartPolicy: Never
+      serviceAccountName: shortnd-api
+
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
+      containers:
+        - name: migration
+          image: 723732457731.dkr.ecr.us-east-1.amazonaws.com/shortnd-api:22823da004388864e98d1d9872001ea38c3ef1d5-2
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - alembic
+            - upgrade
+            - head
+
+          env:
+            - name: POSTGRES_HOST
+              value: "shortnd-postgres.cw3qge8w8gtr.us-east-1.rds.amazonaws.com"
+
+            - name: POSTGRES_PORT
+              value: "5432"
+
+            - name: POSTGRES_DB
+              value: "shortnd"
+
+            - name: AWS_REGION
+              value: "us-east-1"
+
+            - name: AWS_SECRET_ARN
+              value: "arn:aws:secretsmanager:us-east-1:723732457731:secret:rds!db-2c238714-2b45-4bd0-9180-9ec165dcf792-FepIRr"
+
+            - name: BASE_URL
+              value: "http://localhost:8000"
+
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+
+          securityContext:
+            runAsUser: 100
+            runAsGroup: 101
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
